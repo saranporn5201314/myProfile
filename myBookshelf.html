@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bookshelf Navigation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --ink: #e8e6df;
+    --muted: #8a877d;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 20px; scroll-snap-type: y mandatory; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", "Noto Sans Thai", sans-serif;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+    scroll-snap-type: y mandatory;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    max-width: 1100px; margin: 0 auto; padding: 40px 24px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    scroll-snap-align: start;
+  }
+
+  .topnav a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .topnav a:hover {
+    text-decoration: underline;
+  }
+
+  .topnav {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    font-size: 12px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase;
+    padding-bottom: 24px; border-bottom: 1px solid #2a2a2a; margin-bottom: 36px;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 30px; align-items: end; }
+  @media (max-width: 760px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  @font-face {
+  font-family: "Drunken Hour";
+  src: url("fonts/drunkenhourDEMO.otf") format("opentype");
+  }
+
+  .headline {
+    font-family: "Drunken Hour", "Arial Black", sans-serif; font-weight: 900; line-height: 0.92;
+    font-size: clamp(40px, 7vw, 80px); color: #cfcdc5; margin: 0;
+  }
+  .sub { font-size: 14px; color: var(--muted); margin-top: 14px; }
+
+  /* ---------- SHELF (\u0e01\u0e32\u0e23\u0e02\u0e22\u0e32\u0e22\u0e41\u0e1a\u0e1a\u0e40\u0e23\u0e35\u0e22\u0e1a \u0e44\u0e21\u0e48\u0e21\u0e35\u0e2b\u0e21\u0e38\u0e19 3D) ---------- */
+  .shelf-wrap {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 4px solid #d8d6cd;
+    min-height: 330px;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .book {
+    position: relative;
+    flex: 0 0 auto;
+    width: var(--spine-w);
+    height: var(--book-h);
+    cursor: pointer;
+    transition: width 0.45s cubic-bezier(.3,.8,.3,1), transform 0.45s cubic-bezier(.3,.8,.3,1);
+  }
+  .book:hover { transform: translateY(-8px); }
+  .book.active {
+    width: var(--cover-w);
+    transform: translateY(-20px);
+    z-index: 6;
+  }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px 6px 3px 3px;
+    box-shadow: 2px 0 0 rgba(0,0,0,0.15) inset, 0 10px 20px rgba(0,0,0,0.3);
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+  }
+  .face-spine {
+    display: flex; align-items: flex-start; justify-content: center; padding-top: 16px;
+    opacity: 1;
+  }
+  .book.active .face-spine { opacity: 0; transition-delay: 0s; }
+
+  .face-cover {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 18px 14px; text-align: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .book.active .face-cover {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0.15s;
+  }
+
+  .spine-label {
+    writing-mode: horizontal-tb;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    white-space: nowrap;
+    font-family: "Drunken Hour", "Arial Black", sans-serif;
+    font-weight: 700;
+    font-size: 25px;
+    color: #1a1a1a;
+    margin-top: 95px;
+  }
+  .spine-foot {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; font-family: "Inter", sans-serif; font-weight: 600; color: #1a1a1a99; white-space: nowrap;
+  }
+
+  .cover-content h3 { font-family: "Drunken Hour", "Arial Black", sans-serif; font-size: 30px; margin: 0 0 8px; color: #1a1a1a; }
+  .cover-content p { font-size: 17px; color: #3a3a3a; margin: 0; line-height: 1.55; }
+
+  /* ---------- SECTIONS ---------- */
+  .sections { max-width: 900px; margin: 60px auto 0; padding: 0 24px 100px; }
+  .section-block {
+    scroll-margin-top: 30px;
+    /*border-top: 1px solid #2a2a2a; บรรทัดนี้ที่เป็นเส้นคั่น*/
+    padding: 50px 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-snap-align: start;
+  }
+  .section-block h2 { font-family: "Archivo", sans-serif; font-size: 26px; margin: 0 0 12px; }
+  .section-block p { color: #b7b4aa; font-size: 14px; line-height: 1.7; max-width: 560px; }
+
+  /* ---------- ส่วนพื้นหลังเบลอรูปภาพ + กรอบรูป ---------- */
+  .photo-section {
+    position: relative;
+    padding: 70px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    scroll-snap-align: start;
+    /* แทนที่ "your-photo.jpg" ด้วยชื่อไฟล์รูปจริงของคุณ (path อ้างอิงจากตำแหน่งไฟล์ HTML) */
+    background-image: url("pictures/Yuel1.png");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .photo-sectionss {
+    position: relative;
+    padding: 70px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    scroll-snap-align: start;
+    /* แทนที่ "your-photo.jpg" ด้วยชื่อไฟล์รูปจริงของคุณ (path อ้างอิงจากตำแหน่งไฟล์ HTML) */
+    background-image: url("pictures/Yuel2.png");
+    background-size: cover;
+    background-position: center;
+  }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="topnav">
+      <a href="#about">ABOUT ME</a>
+      <a href="#projects">PROJECTS</a>
+      <a href="#skills">SKILLS</a>
+      <a href="#contact">CONTACT</a>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <h1 class="headline">WELCOME TO PROFILE OF<br>YU STUZHA</h1>
+        <p class="sub"></p>
+      </div>
+
+      <div class="shelf-wrap" id="shelf">
+        <div class="book" data-target="about" style="--spine-w:42px; --cover-w:170px; --book-h:250px;">
+          <div class="face face-spine" style="background:#e8d84a;">
+            <span class="spine-label">ABOUT ME</span>
+            <span class="spine-foot">...</span>
+          </div>
+          <div class="face face-cover" style="background:#f7f1c9;">
+            <div class="cover-content"><h3>ABOUT ME</h3><p>Who is Yu?</p></div>
+          </div>
+        </div>
+
+        <div class="book" data-target="contact" style="--spine-w:46px; --cover-w:180px; --book-h:290px;">
+          <div class="face face-spine" style="background:#cfe3d1;">
+            <span class="spine-label">CONTACT</span>
+            <span class="spine-foot">...</span>
+          </div>
+          <div class="face face-cover" style="background:#e4f1e5;">
+            <div class="cover-content"><h3>CONTACT</h3><p>How to contact Yu</p></div>
+          </div>
+        </div>
+
+        <div class="book" data-target="education" style="--spine-w:50px; --cover-w:190px; --book-h:310px;">
+          <div class="face face-spine" style="background:#d9a9e0;">
+            <span class="spine-label">EDUCATION</span>
+            <span class="spine-foot">...</span>
+          </div>
+          <div class="face face-cover" style="background:#f1dff5;">
+            <div class="cover-content"><h3>EDUCATION</h3><p>What level of education is Yu at now?</p></div>
+          </div>
+        </div>
+
+        <div class="book" data-target="skills" style="--spine-w:40px; --cover-w:165px; --book-h:270px;">
+          <div class="face face-spine" style="background:#7fa6e0;">
+            <span class="spine-label">SKILLS</span>
+            <span class="spine-foot">...</span>
+          </div>
+          <div class="face face-cover" style="background:#dde9f9;">
+            <div class="cover-content"><h3>SKILLS</h3><p>What skills does Yu have?</p></div>
+          </div>
+        </div>
+
+        <div class="book" data-target="projects" style="--spine-w:44px; --cover-w:175px; --book-h:295px;">
+          <div class="face face-spine" style="background:#ece7da;">
+            <span class="spine-label" style="color:#1a1a1a;">PROJECTS</span>
+            <span class="spine-foot">...</span>
+          </div>
+          <div class="face face-cover" style="background:#f7f5ec;">
+            <div class="cover-content"><h3>PROJECTS</h3><p>Senior Project of Yu</p></div>
+          </div>
+        </div>
+
+        <div class="book" data-target="about2" style="--spine-w:42px; --cover-w:170px; --book-h:260px;">
+          <div class="face face-spine" style="background:#5c8f6a;">
+            <span class="spine-label">POTATO DESIGN</span>
+            <span class="spine-foot">...</span>
+          </div>
+          <div class="face face-cover" style="background:#dcefe1;">
+            <div class="cover-content"><h3>POTATO DESIGN</h3><p>A timeline of all of Yu's work.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ส่วนที่เพิ่ม: พื้นหลังเต็มหน้าเป็นรูปของคุณเอง (แก้ background-image ข้างบนให้เป็น path รูปจริง) -->
+  <div class="photo-section"></div>
+
+  <div class="sections">
+    <div class="section-block" id="about"><h2>ABOUT ME</h2><p>เขียนแนะนำตัวสั้นๆ เกี่ยวกับตัวคุณตรงนี้ เช่น ความสนใจ เป้าหมาย หรือจุดเด่นของคุณ</p></div>
+    <div class="section-block" id="skills"><h2>SKILLS</h2><p>React Native, Python, Java, JavaScript, C, HTML5/CSS, Docker, IoT, PostgreSQL</p></div>
+    <div class="section-block" id="projects"><h2>PROJECTS</h2><p>รายละเอียดโปรเจกต์ของคุณ ใส่ตัวอย่างผลงาน พร้อมคำอธิบายสั้นๆ ได้ที่นี่</p></div>
+    <div class="section-block" id="education"><h2>EDUCATION</h2><p>มหาวิทยาลัยวลัยลักษณ์ — Intelligent Information Technology Program</p></div>
+    <div class="section-block" id="contact">
+      <h2>CONTACT</h2>
+      <p>Email : saranpornkhjr.epy5201314@gmail.com</p>
+      <p>Facebook : SaranPörn KhamJarően</p>
+      <p>Instagram : srpzzz__</p>
+      <p>LineID : nuch.3957_</p>
+      <p>Telephone Number : 0917574827</p>
+    </div>
+    <div class="section-block" id="about2"><h2>POTATO DESIGN</h2><p>ไทม์ไลน์หรือเรื่องราวรวมผลงานตลอดช่วงเวลานี้</p></div>
+  </div>
+
+  <div class="photo-sectionss"></div>
+
+<script>
+  const books = document.querySelectorAll('.book');
+
+  books.forEach(book => {
+    book.addEventListener('click', () => {
+      const alreadyActive = book.classList.contains('active');
+
+      if (alreadyActive) {
+        const target = document.getElementById(book.getAttribute('data-target'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => { book.classList.remove('active'); }, 500);
+      } else {
+        books.forEach(b => b.classList.remove('active'));
+        book.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
