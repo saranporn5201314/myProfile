@@ -9,9 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --ink: #e8e6df;
-    --muted: #8a877d;
+    --bg: #D5D4D4;
+    --ink: #1c1b1a;
+    --muted: #55534f;
+    --body-text: #3a3936;
+    --line: rgba(0,0,0,0.18);
+    --shelf: #2b2a28;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 20px; scroll-snap-type: y mandatory; }
@@ -48,7 +51,7 @@
   .topnav {
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     font-size: 12px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase;
-    padding-bottom: 24px; border-bottom: 1px solid #2a2a2a; margin-bottom: 36px;
+    padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 36px;
   }
   .hero-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 30px; align-items: end; }
   @media (max-width: 760px) { .hero-grid { grid-template-columns: 1fr; } }
@@ -60,7 +63,7 @@
 
   .headline {
     font-family: "Drunken Hour", "Arial Black", sans-serif; font-weight: 900; line-height: 0.92;
-    font-size: clamp(40px, 7vw, 80px); color: #cfcdc5; margin: 0;
+    font-size: clamp(40px, 7vw, 80px); color: var(--ink); margin: 0;
   }
   .sub { font-size: 14px; color: var(--muted); margin-top: 14px; }
 
@@ -71,7 +74,7 @@
     align-items: flex-end;
     gap: 10px;
     padding-bottom: 14px;
-    border-bottom: 4px solid #d8d6cd;
+    border-bottom: 4px solid var(--shelf);
     min-height: 330px;
     overflow-x: auto;
     overflow-y: visible;
@@ -96,7 +99,7 @@
     position: absolute;
     inset: 0;
     border-radius: 6px 6px 3px 3px;
-    box-shadow: 2px 0 0 rgba(0,0,0,0.15) inset, 0 10px 20px rgba(0,0,0,0.3);
+    box-shadow: 2px 0 0 rgba(0,0,0,0.15) inset, 0 0 0 1px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.18);
     overflow: hidden;
     transition: opacity 0.3s ease;
   }
@@ -151,7 +154,7 @@
     scroll-snap-align: start;
   }
   .section-block h2 { font-family: "Archivo", sans-serif; font-size: 26px; margin: 0 0 12px; }
-  .section-block p { color: #b7b4aa; font-size: 14px; line-height: 1.7; max-width: 560px; }
+  .section-block p { color: var(--body-text); font-size: 14px; line-height: 1.7; max-width: 560px; }
 
   /* ---------- ส่วนพื้นหลังเบลอรูปภาพ + กรอบรูป ---------- */
   .photo-section {
@@ -164,7 +167,7 @@
     box-sizing: border-box;
     scroll-snap-align: start;
     /* แทนที่ "your-photo.jpg" ด้วยชื่อไฟล์รูปจริงของคุณ (path อ้างอิงจากตำแหน่งไฟล์ HTML) */
-    background-image: url("pictures/Yuel1.png");
+    background-image: url("pictures/Umir.png");
     background-size: cover;
     background-position: center;
   }
